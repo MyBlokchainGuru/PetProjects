@@ -1,0 +1,22 @@
+
+<html>
+    <head>
+        <title>Call Smart Contract</title>
+    </head>
+
+    <body>
+        <button id="callContract">Call Contract</button>
+
+        <script src="https://cdn.jsdelivr.net/gh/web3/web3/dist/web3.min.js"></script>
+        <script>
+            let contractAddress = "0xb49f677943bc038e9857d61e7d053caa2c1734c1";
+            let contractABI = [{"constant":false,"inputs":[],"name":"F4","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}];
+            let web3 = new Web3(window.web3.currentProvider);
+            let contract = new web3.eth.Contract(contractABI, contractAddress);
+            
+            document.getElementById("callContract").addEventListener("click", function() {
+                contract.methods.F4().send({ from: web3.eth.accounts[0] });
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,57 @@
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.36/dist/web3.min.js"></script>
+  <script>
+    // Setup web3
+    if (window.ethereum) {
+      window.web3 = new Web3(ethereum);
+      try {
+        // Request account access if needed
+        ethereum.enable();
+        // Acccounts now exposed
+        web3.eth.sendTransaction({/* ... */});
+      } catch (error) {
+        // User denied account access...
+      }
+    }
+    // Legacy dapp browsers...
+    else if (window.web3) {
+      window.web3 = new Web3(web3.currentProvider);
+      // Acccounts always exposed
+      web3.eth.sendTransaction({/* ... */});
+    }
+    // Non-dapp browsers...
+    else {
+      console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+    }
+  </script>
+</head>
+
+<body>
+  <h1>Donate Ethereum</h1>
+  <form>
+    <input type="text" name="amount" placeholder="Enter amount in ETH to donate">
+    <button onclick="sendEthereum()">Donate Ethereum</button>
+  </form>
+  <script>
+    function sendEthereum() {
+      // Get amount to send
+      var amountToSend = document.querySelector('input[name="amount"]').value;
+      // Convert to Wei
+      var weiAmount = web3.utils.toWei(amountToSend, 'ether');
+      // Send transaction
+      web3.eth.sendTransaction({
+        from: web3.eth.defaultAccount,
+        to: '0xyouraddress',
+        value: weiAmount
+      }, function(err, transactionHash) {
+        if(err) {
+          console.log(err);
+        } else {
+          console.log(transactionHash);
+        }
+      });
+    }
+  </script>
+</body>
+</html>

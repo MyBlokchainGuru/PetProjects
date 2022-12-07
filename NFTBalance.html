@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Wallet NFT Balance Checker</title>
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.2.1/dist/web3.js"></script>
+</head>
+
+<body>
+  <h1>Wallet NFT Balance Checker</h1>
+  <p>Enter your wallet address below to check your NFT balances.</p>
+
+  <form onsubmit="return checkBalance()">
+    <label>Wallet Address:</label>
+    <input type="text" id="address" />
+    <input type="submit" value="Check Balance" />
+  </form>
+
+  <div id="results"></div>
+
+  <script>
+    async function checkBalance() {
+      // Get the user's wallet address from the form
+      const address = document.getElementById('address').value;
+
+      // Connect to the Web3 provider
+      const web3 = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/b2f96ced182d4c5583dd95770a4abbfe'));
+
+      // Get the NFT balance of the user's wallet
+      const balance = await web3.eth.getBalance('0x' + address);
+
+      // Output the balance to the results div
+      document.getElementById('results').innerHTML = `<h2>Your NFT Balance</h2><p>${balance}</p>`;
+
+      return false;
+    }
+  </script>
+</body>
+
+</html>

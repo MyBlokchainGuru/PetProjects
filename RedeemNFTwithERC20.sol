@@ -1,44 +1,81 @@
-pragma solidity ^0.5.1;
+pragma solidity ^0.8.4;
 
-//ERC20 Contract ABI
-contract ERC20 {
-    function transferFrom(address from, address to, uint256 value) external returns (bool);
-    function balanceOf(address who) external view returns (uint256);
+import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/SafeERC20Burnable.sol";
+import "@openzeppelin/contracts/token/ERC1155/SafeERC1155.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+// ERC1155 contract for the "NFT X" NFT
+
+contract NFTX is Ownable, SafeERC1155 {
+using SafeMath for uint256;
+
+Copy code
+// Address of the ERC20 contract for token A
+address tokenAAddress;
+
+// Total supply of "NFT X" NFTs
+uint256 public totalSupply = 100000;
+
+// Mapping from user addresses to the number of "NFT X" NFTs they own
+mapping(address => uint256) public balances;
+
+// Constructor that sets the address of the ERC20 contract for token A
+constructor(address _tokenAAddress) public {
+    tokenAAddress = _tokenAAddress;
 }
 
-//ERC1155 Contract ABI
-contract ERC1155 {
-    function safeMint(address to, uint256 id, uint256 amount, bytes memory metadata ) external returns (bool);
-    function balanceOf(address tokenHolder, uint256 tokenId) public view returns (uint balance);
-    function safeTransferFrom(address from, address to, uint256 tokenId, uint256 amount, bytes memory metadata) external returns (bool);
+// Function for defining the address of the ERC20 contract for token A
+function setTokenAAddress(address _tokenAAddress) public onlyOwner {
+    tokenAAddress = _tokenAAddress;
 }
 
-contract Swap {
-    address public ERC20_Token;
-    address public ERC1155_Token;
-    string public metadataURL = "https://example.com/metadata.json";
-    uint256 public ERC20_Amount = 1000;
+// Function for buying an "NFT X" NFT with token A
+function buyNFTX() public {
+    // Check if the user has enough token A to buy an "NFT X" NFT
+    // ...
     
-    //Constructor
-    constructor(address _ERC20_Token, address _ERC1155_Token) public {
-        require(address(_ERC20_Token).isContract());
-        require(address(_ERC1155_Token).isContract());
-        ERC20_Token = _ERC20_Token;
-        ERC1155_Token = _ERC1155_Token;
-    }
+    // Transfer 10000 token A from the user's wallet to the contract
+    // ...
     
-    //Swap Function
-    function swap(address from) public {
-        //Check if user has enough balance
-        ERC20 erc20 = ERC20(ERC20_Token);
-        require(erc20.balanceOf(from) >= ERC20_Amount);
-        
-        //Transfer from user to contract
-        erc20.transferFrom(from, address(this), ERC20_Amount);
-        
-        //Mint ERC1155 token with metadata
-        bytes memory metadata = abi.encodeWithSignature("metadataURL()", metadataURL);
-        ERC1155 erc1155 = ERC1155(ERC1155_Token);
-        erc1155.safeMint(from, 0, ERC20_Amount, metadata);
-    }
+    // Mint a new "NFT X" NFT and transfer it to the user's wallet
+    mint(msg.sender, 1, "NFT X");
+    balances[msg.sender]++;
 }
+}
+
+// Solidity contract for interacting with the NFTX contract and
+// calling its functions
+
+contract NFTXInterface {
+// Address of the NFTX contract
+address nftXAddress;
+
+Copy code
+// Constructor that sets the address of the NFTX contract
+constructor(address _nftXAddress) public {
+    nftXAddress = _nftXAddress;
+}
+
+// Function for calling the setTokenAAddress function in the NFTX contract
+function setTokenAAddress(address tokenAAddress) public {
+    NFTX nftX = NFTX(nftXAddress);
+    nftX.setTokenAAddress(tokenAAddress);
+}
+
+// Function for calling the buyNFTX function in the NFTX contract
+function buyNFTX() public {
+    // Check if the user has enough token A to buy an "NFT X" NFT
+    IERC20 tokenA = IERC20(nftX.tokenAAddress);
+    require(tokenA.balanceOf(msg.sender) >= 10000, "Insufficient token A balance");
+    
+    // Transfer 10000 token A from the user's wallet to the contract
+    tokenA.safeTransferFrom(msg.sender, nftXAddress, 10000);
+    
+    // Mint a new "NFT X" NFT and transfer it to the user's wallet
+    nftX.mint(msg.sender, 1, "NFT X");
+    nftX.balances[msg.sender]++;
+}
+}
+

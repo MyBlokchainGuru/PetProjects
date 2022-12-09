@@ -1,0 +1,46 @@
+<html>
+  <head>
+    <title>Ethereum Authentication Web App</title>
+  </head>
+  <body>
+    <script type="text/javascript" src="https://unpkg.com/web3@1.0.0-beta.37/dist/web3.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/eth-sig-util@3.1.0/dist/index.min.js"></script>
+
+    <script type="text/javascript">
+      // Initialize Web3 instance
+      const web3 = new Web3(new Web3.providers.HttpProvider("https://testnet.moralis.io"));
+
+      //Authenticate the user via the Moralis Web3 SDK
+      function authenticateUser() {
+        web3.eth.getAccounts().then(async (accounts) => {
+          const currentAccount = accounts[0];
+          // Generate a secret key by hashing the user's Ethereum address
+          const secretKey = web3.utils.sha3(currentAccount);
+
+          // Use the secret key to authenticate the user
+          const authData = await web3.eth. Moralis.authenticateUser(currentAccount, secretKey);
+
+          // Send an API call with the user's signed Ethereum address and secret key
+          const apiUrl = 'https://example.com';
+          const payload = {
+            ethereumAddress: authData.signature,
+            secretKey
+          };
+
+          fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+          })
+            .then(response => response.json())
+            .catch(error => console.error('Error:', error))
+            .then(response => console.log('Success:', response));
+        });
+      }
+
+    </script>
+    <input type="button" onclick="authenticateUser();" value="Authenticate User" />
+  </body>
+</html>
